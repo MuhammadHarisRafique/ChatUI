@@ -26,14 +26,12 @@ class ViewController:JSQMessagesViewController{
         
     }
      var messages = [JSQMessage]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.senderId = self.currentUser.id
         self.senderDisplayName = self.currentUser.name
-        
-        
-        print(self.senderId)
-        print(self.senderDisplayName)
         self.messages = self.getMessages()
     }
 
@@ -52,13 +50,6 @@ class ViewController:JSQMessagesViewController{
         
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
-
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.messages.count
@@ -69,24 +60,55 @@ class ViewController:JSQMessagesViewController{
     }
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAt indexPath: IndexPath!) -> JSQMessageBubbleImageDataSource! {
-        let bubbleFactory = JSQMessagesBubbleImageFactory()
         
-        return bubbleFactory?.incomingMessagesBubbleImage(with: .green)
+        
+        let bubbleFactory = JSQMessagesBubbleImageFactory()
+        let message = self.messages[indexPath.row]
+        
+        if self.senderId == message.senderId{
+            
+             return bubbleFactory?.outgoingMessagesBubbleImage(with: .black)
+        
+        }else{
+            
+             return bubbleFactory?.incomingMessagesBubbleImage(with: .red)
+            
+        }
     }
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, avatarImageDataForItemAt indexPath: IndexPath!) -> JSQMessageAvatarImageDataSource! {
         return nil
     }
     
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, attributedTextForMessageBubbleTopLabelAt indexPath: IndexPath!) -> NSAttributedString! {
+        
+        let message = self.messages[indexPath.row]
+        let user = message.senderDisplayName
+        return NSAttributedString(string: user!)
+        
+    }
+    
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, layout collectionViewLayout: JSQMessagesCollectionViewFlowLayout!, heightForMessageBubbleTopLabelAt indexPath: IndexPath!) -> CGFloat {
+        return 15.0
+    }
+    
+    override func didPressSend(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
+        
+        let message = JSQMessage(senderId: senderId, displayName: senderDisplayName, text: text)
+        self.messages.append(message!)
+        finishSendingMessage()
+        self.receivedMessage()
+ 
+    }
     
     
-    
-    
-    
-    
-    
-    
-    
+    private func receivedMessage(){
+        let message = JSQMessage(senderId: "2", displayName: "Rehan", text: "Great work")
+        self.messages.append(message!)
+        finishReceivingMessage()
+        
+        
+    }
 
 }
 
